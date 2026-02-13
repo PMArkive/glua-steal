@@ -7,8 +7,8 @@ jobs:
     strategy:
       matrix:
         os:
-          - { name: Ubuntu 20.04, distro: ubuntu-20.04, gcc_version: 9 }
           - { name: Ubuntu 22.04, distro: ubuntu-22.04, gcc_version: 11 }
+          - { name: Ubuntu 24.04, distro: ubuntu-24.04, gcc_version: 13 }
         build_type: [Debug, Release]
         toolchain: ["gcc-32bit", "gcc-64bit"]
 
@@ -47,20 +47,20 @@ jobs:
         run: ctest -V -C ${{matrix.build_type}}
 
       - name: Rename library artifact
-        run: mv ${{runner.workspace}}/build/src/libgluasteal.so ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-gcc${{matrix.os.gcc_version}}-${{matrix.toolchain}}-${{matrix.build_type}}.so
+        run: mv ${{runner.workspace}}/build/src/libgluasteal.so ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-gcc${{matrix.os.gcc_version}}-${{matrix.toolchain}}-${{matrix.build_type}}-${{github.sha}}.so
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: "Linux"
-          path: ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-gcc${{matrix.os.gcc_version}}-${{matrix.toolchain}}-${{matrix.build_type}}.so
+          name: gluasteal-${{matrix.os.distro}}-gcc${{matrix.os.gcc_version}}-${{matrix.toolchain}}-${{matrix.build_type}}-${{github.sha}}
+          path: ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-gcc${{matrix.os.gcc_version}}-${{matrix.toolchain}}-${{matrix.build_type}}-${{github.sha}}.so
           if-no-files-found: error
           retention-days: 14
   windows:
     strategy:
       matrix:
         os:
-          - { name: Windows Server 2019, distro: windows-2019 }
           - { name: Windows Server 2022, distro: windows-2022 }
+          - { name: Windows Server 2025, distro: windows-2025 }
         build_type: [Debug, Release]
         arch: [Win32, x64]
 
@@ -91,20 +91,19 @@ jobs:
         run: ctest -V -C ${{matrix.build_type}} --timeout 60
 
       - name: Rename library artifact
-        run: move ${{runner.workspace}}/build/src/${{matrix.build_type}}/gluasteal.dll ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.arch}}-${{matrix.build_type}}.dll
+        run: move ${{runner.workspace}}/build/src/${{matrix.build_type}}/gluasteal.dll ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.arch}}-${{matrix.build_type}}-${{github.sha}}.dll
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: "Windows"
-          path: ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.arch}}-${{matrix.build_type}}.dll
+          name: gluasteal-${{matrix.os.distro}}-${{matrix.arch}}-${{matrix.build_type}}-${{github.sha}}
+          path: ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.arch}}-${{matrix.build_type}}-${{github.sha}}.dll
           if-no-files-found: error
           retention-days: 14
   macos:
     strategy:
       matrix:
         os:
-          - { name: "macOS Big Sur 11", distro: macos-11 }
-          - { name: "macOS Monterey 12", distro: macos-12 }
+          - { name: "macOS 15 Intel", distro: macos-15-intel }
         build_type: [Debug, Release]
         toolchain: ["gcc-macos-x86_64"]
 
@@ -138,12 +137,12 @@ jobs:
         run: ctest -V -C ${{matrix.build_type}}
 
       - name: Rename library artifact
-        run: mv ${{runner.workspace}}/build/src/libgluasteal.dylib ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.toolchain}}-${{matrix.build_type}}.dylib
+        run: mv ${{runner.workspace}}/build/src/libgluasteal.dylib ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.toolchain}}-${{matrix.build_type}}-${{github.sha}}.dylib
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: "macOS"
-          path: ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.toolchain}}-${{matrix.build_type}}.dylib
+          name: gluasteal-${{matrix.os.distro}}-${{matrix.toolchain}}-${{matrix.build_type}}-${{github.sha}}
+          path: ${{runner.workspace}}/build/gluasteal-${{matrix.os.distro}}-${{matrix.toolchain}}-${{matrix.build_type}}-${{github.sha}}.dylib
           if-no-files-found: error
           retention-days: 14
 
